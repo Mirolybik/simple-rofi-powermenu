@@ -20,11 +20,7 @@ fi
 ddir="$HOME/.config/rofi/config"
 
 rdialog () {
-rofi -dmenu\
-    -i\
-    -no-fixed-num-lines\
-    -p "Are You Sure? "\
-    
+rofi -dmenu -i -no-fixed-num-lines -p "Are You Sure? " 
 }
 
 options="$shutdown\n$reboot\n$suspend\n$logout\n$lock"
