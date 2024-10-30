@@ -1,57 +1,62 @@
-#!/usr/bin/env bash
-rofi_command="rofi -no-fixed-num-lines"
+#!/usr/bin/bash
+rofic="rofi -no-fixed-num-lines"
 
-uptime=$(uptime -p | sed -e 's/up //g')
-
+upt=$(uptime -p|sed -e 's/up //g')
 
 if [[ "$layout" == "TRUE" ]]; then
-	shutdown="   Shutdown"
-	reboot="   Restart"
-	lock="󰌾  Lock"
-	suspend="󰤄  Sleep"
-	logout="󰗽  Logout"
+	st="   Shutdown"
+	rb="   Restart"
+	lk="󰌾  Lock"
+	ss="󰤄  Sleep"
+	lg="󰗽  Logout"
 else
-    shutdown="   Shutdown"
-	reboot="   Restart"
-	lock="󰌾  Lock"
-	suspend="󰤄  Sleep"
-	logout="󰗽  Logout"
+    st="   Shutdown"
+	rb="   Restart"
+	lk="󰌾  Lock"
+	ss="󰤄  Sleep"
+	lg="󰗽  Logout"
 fi
-ddir="$HOME/.config/rofi/config"
 
-rdialog () {
-rofi -dmenu -i -no-fixed-num-lines -p "Are You Sure? " 
+log() 
+{
+    rofi -dmenu -i -no-fixed-num-lines -p "Are You Sure? "
 }
 
-options="$shutdown\n$reboot\n$suspend\n$logout\n$lock"
+opt="$st\n$rb\n$ss\n$lg\n$lk"
 
-chosen="$(echo -e "$options" | $rofi_command -p "UP - $uptime" -dmenu -selected-row 0)"
-case $chosen in
-    $shutdown)
-		ans=$(rdialog &)
+cs="$(echo -e "$opt"| $rofic -p "UP - $upt" -dmenu -selected-row 0)"
+
+show_err()
+{
+    rofi -dmenu -i -no-fixed-num-lines -p "No: y / n "
+}
+
+case $cs in
+    $st)
+		ans=$(log&)
 		if [[ $ans == "yes" ]] || [[ $ans == "YES" ]] || [[ $ans == "y" ]]; then
 			systemctl poweroff
 		elif [[ $ans == "no" ]] || [[ $ans == "NO" ]] || [[ $ans == "n" ]]; then
 			exit
         else
-			show_msg
+			show_err
         fi
         ;;
-    $reboot)
-		ans=$(rdialog &)
-		if [[ $ans == "yes" ]] || [[ $ans == "YES" ]] || [[ $ans == "y" ]]; then
+    $rb)
+		ans=$(log&)
+		if [[$ans == "yes" ]] || [[ $ans == "YES" ]] || [[ $ans == "y" ]]; then
 			systemctl reboot
 		elif [[ $ans == "no" ]] || [[ $ans == "NO" ]] || [[ $ans == "n" ]]; then
 			exit
         else
-			show_msg
+			show_err
         fi
         ;;
-    $lock)
+    $lk)
         i3lock-fancy
         ;;
-    $suspend)
-		ans=$(rdialog &)
+    $ss)
+		ans=$(log&)
 		if [[ $ans == "yes" ]] || [[ $ans == "YES" ]] || [[ $ans == "y" ]]; then
 			mpc -q pause
 			amixer set Master mute
@@ -60,17 +65,17 @@ case $chosen in
 		elif [[ $ans == "no" ]] || [[ $ans == "NO" ]] || [[ $ans == "n" ]]; then
 			exit
         else
-			show_msg
+			show_err
         fi
         ;;
-    $logout)
-		ans=$(rdialog &)
+    $lg)
+		ans=$(log&)
 		if [[ $ans == "yes" ]] || [[ $ans == "YES" ]] || [[ $ans == "y" ]]; then
 			i3-msg exit
 		elif [[ $ans == "no" ]] || [[ $ans == "NO" ]] || [[ $ans == "n" ]]; then
 			exit
         else
-			show_msg
+			show_err
         fi
         ;;
 esac
